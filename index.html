@@ -1,0 +1,70 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#ef6f91">
+<meta name="description" content="Vida+ — demonstração do organizador financeiro">
+<title>Vida+ Demo</title>
+<link rel="manifest" href="manifest.json">
+<style>
+*{box-sizing:border-box}body{margin:0;background:#f6f7fb;color:#17202a;font-family:system-ui,-apple-system,Segoe UI,sans-serif}
+header{position:sticky;top:0;z-index:5;background:#fff;border-bottom:1px solid #e7e9ef;padding:14px 18px;display:flex;align-items:center;justify-content:space-between}
+.logo{font-size:27px;font-weight:900}.logo i{color:#ef6f91;font-style:normal}
+main{max-width:720px;margin:auto;padding:22px 16px 100px}.hello h1{margin:0;font-size:28px}.muted{color:#6c7482}
+.balance{margin-top:18px;background:#202733;color:white;border-radius:22px;padding:22px}.balance .value{font-size:34px;font-weight:800;margin:7px 0 18px}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:14px}.card{background:#fff;border:1px solid #e6e8ee;border-radius:18px;padding:17px}.num{font-size:22px;font-weight:800;margin-top:5px}
+.section{margin-top:24px}.row{display:flex;justify-content:space-between;gap:12px;padding:15px 0;border-bottom:1px solid #edf0f3}.row:last-child{border-bottom:0}
+.btn{border:0;border-radius:12px;padding:12px 15px;font-weight:800;cursor:pointer}.primary{background:#ef6f91;color:white}.secondary{background:#eef0f5;color:#202733}.full{width:100%}
+.nav{position:fixed;bottom:0;left:0;right:0;background:#fff;border-top:1px solid #e5e7eb;display:flex;justify-content:space-around;padding:9px 4px;z-index:10}.nav button{background:none;border:0;color:#697386;font-weight:700;font-size:12px}.nav button.active{color:#ef6f91}
+.pill{font-size:11px;padding:5px 8px;border-radius:999px;background:#edf8f2;color:#18734d;font-weight:800}.danger{color:#bd405e}.success{color:#18734d}
+.modal{position:fixed;inset:0;background:#0008;display:flex;align-items:end;z-index:20}.sheet{background:white;width:100%;border-radius:24px 24px 0 0;padding:22px;max-height:85vh;overflow:auto}
+input{width:100%;padding:13px;border:1px solid #dfe3ea;border-radius:11px;margin:7px 0 13px;font-size:16px}
+.demo{font-size:12px;background:#fff5f7;border:1px solid #f7d2dc;padding:10px;border-radius:12px;margin-top:12px}
+</style>
+</head>
+<body>
+<header><div class="logo">vida<i>+</i></div><span class="pill">DEMO</span></header>
+<main id="app"></main>
+<nav class="nav">
+<button data-v="home">⌂<br>Início</button>
+<button data-v="transactions">↕<br>Gastos</button>
+<button data-v="debts">▣<br>Dívidas</button>
+<button data-v="vaults">◎<br>Cofres</button>
+<button data-v="more">☰<br>Mais</button>
+</nav>
+<script>
+const state={balance:28268.80,spent:3842.10,debts:6480,vault:4250};
+const transactions=[
+ ["🛒","Supermercado","- R$ 287,30"],
+ ["⛽","Combustível","- R$ 120,00"],
+ ["🍔","Alimentação","- R$ 52,90"],
+ ["💡","Energia elétrica","- R$ 198,70"]
+];
+function money(n){return n.toLocaleString("pt-BR",{style:"currency",currency:"BRL"})}
+function home(){return `<div class="hello"><h1>Olá! 👋</h1><div class="muted">Sua vida financeira em um só lugar.</div></div>
+<div class="balance"><div class="muted" style="color:#cbd0d8">Saldo total</div><div class="value">${money(state.balance)}</div><button class="btn primary" onclick="openBank()">＋ Conectar banco</button></div>
+<div class="grid">
+<div class="card"><div class="muted">Gastos do mês</div><div class="num">${money(state.spent)}</div></div>
+<div class="card"><div class="muted">Dívidas</div><div class="num">${money(state.debts)}</div></div>
+<div class="card"><div class="muted">Reserva</div><div class="num">${money(state.vault)}</div></div>
+<div class="card"><div class="muted">Fatura</div><div class="num">R$ 1.280,40</div></div></div>
+<div class="section card"><b>Próximos pagamentos</b>
+<div class="row"><span>💳 Fatura do cartão</span><b>R$ 1.280,40</b></div>
+<div class="row"><span>💡 Energia</span><b>R$ 198,70</b></div>
+<div class="row"><span>📦 Parcela 4/12</span><b>R$ 450,00</b></div></div>
+<div class="section card"><b>Últimos gastos</b>${transactions.slice(0,3).map(x=>`<div class="row"><span>${x[0]} ${x[1]}</span><b>${x[2]}</b></div>`).join("")}</div>`}
+function transactionsPage(){return `<h2>Gastos</h2><div class="card">${transactions.map(x=>`<div class="row"><span>${x[0]} ${x[1]}<br><small class="muted">Hoje</small></span><b>${x[2]}</b></div>`).join("")}<button class="btn primary full" onclick="openExpense()">＋ Registrar gasto</button></div><div class="demo">Nesta demonstração, os dados são fictícios e ficam apenas neste aparelho.</div>`}
+function debts(){return `<h2>Dívidas e parcelas</h2><div class="card"><div class="row"><span>Compra parcelada<br><small class="muted">4 de 12 parcelas</small></span><b>R$ 450,00</b></div><div class="row"><span>Empréstimo pessoal</span><b>R$ 6.030,00</b></div><button class="btn primary full" onclick="alert('Na versão completa: cadastro de dívida, juros, vencimento e alertas.')">＋ Cadastrar dívida</button></div>`}
+function vaults(){return `<h2>Cofres</h2><div class="card"><b>🛟 Reserva de emergência</b><div class="num">${money(state.vault)}</div><div class="muted">42% da meta de R$ 10.000</div><br><button class="btn primary full" onclick="alert('Na versão completa: aporte automático e regras de reserva.')">＋ Adicionar ao cofre</button></div><div class="card" style="margin-top:12px"><b>✈️ Viagem</b><div class="num">R$ 1.200,00</div><div class="muted">24% da meta de R$ 5.000</div></div>`}
+function more(){return `<h2>Mais</h2><div class="card"><div class="row"><span>🏦 Bancos</span><button class="btn secondary" onclick="openBank()">Abrir</button></div><div class="row"><span>💳 Cartões</span><span>1 conectado</span></div><div class="row"><span>🔔 Alertas</span><span>3 ativos</span></div><div class="row"><span>💬 WhatsApp</span><span class="muted">Próxima fase</span></div><div class="row"><span>👑 Painel do proprietário</span><span class="pill">Somente dono</span></div></div>`}
+function render(v="home"){let html=v==="transactions"?transactionsPage():v==="debts"?debts():v==="vaults"?vaults():v==="more"?more():home();app.innerHTML=html;document.querySelectorAll(".nav button").forEach(b=>b.classList.toggle("active",b.dataset.v===v))}
+function openBank(){document.body.insertAdjacentHTML("beforeend",`<div class="modal" id="modal"><div class="sheet"><h2>Conectar banco</h2><p class="muted">Demonstração — nenhuma conta bancária real será acessada.</p><button class="btn primary full" onclick="demoBank()">🏦 Conectar banco de teste</button><button class="btn secondary full" onclick="closeModal()">Cancelar</button></div></div>`)}
+function demoBank(){closeModal();alert("Banco de teste conectado! Na versão comercial, esta etapa abrirá o Pluggy Connect e pedirá o consentimento do usuário.")}
+function openExpense(){document.body.insertAdjacentHTML("beforeend",`<div class="modal" id="modal"><div class="sheet"><h2>Novo gasto</h2><input id="desc" placeholder="Ex.: Mercado"><input id="amount" type="number" step="0.01" placeholder="Valor"><button class="btn primary full" onclick="saveExpense()">Salvar gasto</button><button class="btn secondary full" onclick="closeModal()">Cancelar</button></div></div>`)}
+function saveExpense(){let d=document.getElementById("desc").value||"Novo gasto",a=parseFloat(document.getElementById("amount").value)||0;if(a<=0)return alert("Informe um valor.");state.spent+=a;transactions.unshift(["💰",d,"- "+money(a)]);closeModal();render("transactions")}
+function closeModal(){document.getElementById("modal")?.remove()}
+document.querySelectorAll(".nav button").forEach(b=>b.onclick=()=>render(b.dataset.v));
+render();
+</script>
+</body></html>
